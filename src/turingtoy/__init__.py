@@ -1,9 +1,4 @@
-from typing import (
-    Dict,
-    List,
-    Optional,
-    Tuple,
-)
+from typing import Dict, List, Optional, Tuple
 
 import poetry_version
 
@@ -14,6 +9,17 @@ def run_turing_machine(
     input_: str,
     steps: Optional[int] = None,
 ) -> Tuple[str, List[Dict[str, str]], bool]:
+    """
+    Simulates the execution of a Turing machine.
+    
+    Args:
+        machine (Dict): The Turing machine configuration.
+        input_ (str): The input string for the Turing machine.
+        steps (Optional[int]): The maximum number of steps to execute (default is unlimited).
+    
+    Returns:
+        Tuple[str, List[Dict[str, str]], bool]: The output string, execution history, and acceptance status.
+    """
     blank = machine['blank']
     start_state = machine['start state']
     final_states = set(machine['final states'])
@@ -27,6 +33,7 @@ def run_turing_machine(
     step_count = 0
 
     while steps is None or step_count < steps:
+        # Extend the tape to the left or right if needed
         if current_position < 0:
             tape.insert(0, blank)
             current_position = 0
@@ -40,6 +47,7 @@ def run_turing_machine(
         if transition is None:
             break
 
+        # Log the current state, position, and transition
         history_entry = {
             'state': current_state,
             'reading': current_symbol,
@@ -49,6 +57,7 @@ def run_turing_machine(
         }
         execution_history.append(history_entry)
 
+        # Update the tape and the current position/state based on the transition
         if isinstance(transition, str):
             if transition == 'R':
                 current_position += 1
@@ -66,9 +75,11 @@ def run_turing_machine(
 
         step_count += 1
 
+        # Check if the current state is a final state
         if current_state in final_states:
             break
     
+    # Prepare the output and acceptance status
     output = ''.join(tape).strip(blank)
     accepted = current_state in final_states
 
